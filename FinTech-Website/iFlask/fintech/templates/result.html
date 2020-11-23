@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap Core CSS -->
+    <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <style>
+    	body {
+		    padding-top: 70px;
+		}
+		footer {
+		    margin: 50px 0;
+		}
+    </style>
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    <!-- Page Content -->
+    <div class="container">
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div><h1>FinTech Smart Investment Prediction System</h1></div>
+                <div style="font-weight: 500;">
+                    A dynamic interactive system between investors and the Machine Learning engine implemented by XGBoost. Select key columns as input features based on importance scores, the engine predicts the optimal loans and recommends them to the investor accurately and quickly.
+                </div>
+
+            </div>
+        </div>
+
+
+        <hr>
+
+        <div class="container fluid content" id="content">
+            <div class="col-sm-6 no-padding">
+                <div class="wrapper input-box">
+                    <div class="box-header-in">
+                        <div class="input-title"><h2 style="text-align:center; color:GoldenRod;">Features</h2></div>
+                    </div>
+                    <form id="frmInput" class="ajax-post" action="{{url_for('fintech.form')}}" method="post">
+                        <div class="input-item">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <label>Amount</label>
+                                    <input type="text" id="loan_amnt" name="loan_amnt" class="myinput" value="15000">
+                                </div>
+                                <div class="col-sm-8">
+                                    <label>Rate: <small id="range-slider__rate" style="color: blue;">12</small></label>
+                                        <div class="range-slider small-slider">
+                                            <div class="range-slider__range-limits">
+                                                <span style="float:left; color: blue;">0%</span>
+                                                <span style="float:right; color: blue;">100%</span>
+                                            </div>
+                                            <input id="int_rate" name="int_rate"  type="range" class="range-slider__range small-slider" value="12" min="0" max="100" oninput="change_rate()" onchange="change_rate()">
+                                            <script type='text/javascript'>
+                                                function change_rate() {
+                                                    var value = document.getElementById('int_rate').value ;
+                                                    document.getElementById('range-slider__rate').innerHTML = value;
+                                                }
+                                            </script>
+                                        </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <label>Term(months)</label>
+                                    <div style="width:155px;">
+                                        <input class='toggle mytoggle' type="checkbox" id="term" value="60" name="term" checked='checked' />
+                                        <span style="font-size: 18px;">60</span>
+                                    </div>
+
+                                </div>
+                                <div class="col-sm-8">
+                                    <label>%Funded: <small id="range-slider__funded" style="color: blue;">69</small></label>
+                                    <div class="range-slider small-slider">
+                                        <div class="range-slider__range-limits">
+                                            <span style="float:left; color: blue;"">0%</span>
+                                            <span style="float:right; color: blue;">100%</span>
+                                        </div>
+                                        <input id="fund_rate" name="fund_rate" type="range" class="range-slider__range small-slider" value="69" min="0" max="100" oninput="change_funded()" onchange="change_funded()">
+                                            <script type='text/javascript'>
+                                                function change_funded() {
+                                                    var value = document.getElementById('fund_rate').value ;
+                                                    document.getElementById('range-slider__funded').innerHTML = value;
+                                                }
+                                            </script>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="sliders">
+                                <label id="extra">Debt-to-Income Ratio: <small id="range-slider__ratio" style="color: blue;">26</small></label>
+                                    <div class="range-slider">
+                                        <div class="range-slider__range-limits">
+                                            <span style="float:left; color: blue;">0%</span>
+                                            <span style="float:right; color: blue;">100%</span>
+                                        </div>
+                                        <input id="dti" name="dti" class="range-slider__range" type="range" value="26" min="0" max="100" oninput="change_ratio()" onchange="change_ratio()">
+                                            <script type='text/javascript'>
+                                                function change_ratio() {
+                                                    var value = document.getElementById('dti').value ;
+                                                    document.getElementById('range-slider__ratio').innerHTML = value;
+                                                }
+                                            </script>
+                                    </div>
+                                    <div class="help-tip" id="extra-t">
+                                        <p style="color: grey;">A ratio calculated using the borrower’s total monthly debt payments on the total debt obligations, excluding mortgage and the requested LC loan, divided by the borrower’s self-reported monthly income.</p>
+                                    </div>
+
+                                <label id="extra">Annual Income: <small id="range-slider__inc" style="color: blue;">78000</small></label>
+                                    <div class="range-slider">
+                                        <div class="range-slider__range-limits">
+                                            <span style="float:left; color: blue;">0</span>
+                                            <span style="float:right; color: blue;">1000000</span>
+                                        </div>
+                                        <input id="annual_inc" name="annual_inc" class="range-slider__range" type="range" value="78000" min="0" max="1000000" oninput="change_inc()" onchange="change_inc()">
+                                            <script type='text/javascript'>
+                                                function change_inc() {
+                                                    var value = document.getElementById('annual_inc').value ;
+                                                    document.getElementById('range-slider__inc').innerHTML = value;
+                                                }
+                                            </script>
+                                    </div>
+                                <div class="help-tip" id="extra-t">
+                                    <p style="color: grey;">The self-reported annual income provided by the borrower during registration.</p>
+                                </div>
+
+                                <label id="extra">Total Installment Limit: <small id="range-slider__inst" style="color: blue;">41370</small></label>
+                                    <div class="range-slider">
+                                        <div class="range-slider__range-limits">
+                                            <span style="float:left; color: blue;">0</span>
+                                            <span style="float:right; color: blue;">1500000</span>
+                                        </div>
+                                        <input id="total_il_high_credit_limit" name="total_il_high_credit_limit" class="range-slider__range" type="range" value="41370" min="0" max="1500000" oninput="change_inst()" onchange="change_inst()">
+                                            <script type='text/javascript'>
+                                                function change_inst() {
+                                                    var value = document.getElementById('total_il_high_credit_limit').value ;
+                                                    document.getElementById('range-slider__inst').innerHTML = value;
+                                                }
+                                            </script>
+                                    </div>
+                                <div class="help-tip" id="extra-t">
+                                    <p style="color: grey;">Total installment high credit/credit limit</p>
+                                </div>
+
+                                <label id="extra">Revolving Credit Limit: <small id="range-slider__credit" style="color: blue;">9525</small></label>
+                                    <div class="range-slider">
+                                        <div class="range-slider__range-limits">
+                                            <span style="float:left; color: blue;">0</span>
+                                            <span style="float:right; color: blue;">300000</span>
+                                        </div>
+                                        <input id="bc_open_to_buy" name="bc_open_to_buy" class="range-slider__range" type="range" value="9525" min="0" max="300000" oninput="change_credit()" onchange="change_credit()">
+                                            <script type='text/javascript'>
+                                                function change_credit() {
+                                                    var value = document.getElementById('bc_open_to_buy').value ;
+                                                    document.getElementById('range-slider__credit').innerHTML = value;
+                                                }
+                                            </script>
+                                    </div>
+                                <div class="help-tip" id="extra-t">
+                                    <p style="color: grey;">Total open to buy on revolving bankcards.</p>
+                                </div>
+
+                                <label id="extra">Portion of Balances: <small id="range-slider__balan" style="color: blue;">42</small></label>
+                                    <div class="range-slider">
+                                        <div class="range-slider__range-limits">
+                                            <span style="float:left; color: blue;">0%</span>
+                                            <span style="float:right; color: blue;">300%</span>
+                                        </div>
+                                        <input id="bc_util" name="bc_util" class="range-slider__range" type="range" value="42" min="0" max="300" oninput="change_balan()" onchange="change_balan()">
+                                            <script type='text/javascript'>
+                                                function change_balan() {
+                                                    var value = document.getElementById('bc_util').value ;
+                                                    document.getElementById('range-slider__balan').innerHTML = value;
+                                                }
+                                            </script>
+                                    </div>
+                                <div class="help-tip" id="extra-t">
+                                    <p style="color: grey;">Ratio of total current balance to high credit/credit limit for all bankcard accounts.</p>
+                                </div>
+                            </div>
+
+                            <!-- Submit button -->
+                            <button id="go" class="submit-btn" type="submit" >Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-sm-6 output-box no-padding">
+                <div class="box-header-out">
+                    <div class="input-title"><h2 style="text-align:center; color:GoldenRod;">Prediction</h2></div>
+                </div>
+                <div class="input-item overflow-out">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                          <thead>
+                            <tr>
+                              <th>ID</th>
+                              <th>Amount</th>
+                              <th>Rate</th>
+                              <th>Term</th>
+                              <th>%Founded</th>
+                              <th>Risk</th>
+                            </tr>
+                          </thead>
+                          <tbody id="result">
+                            <tr>
+                              <td>1</td>
+                              <td>15000</td>
+                              <td>12</td>
+                              <td>60</td>
+                              <td>69</td>
+                              <td>0.088</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                    </div>
+                    <!-- Clear button -->
+                    <button id="clear" class="submit-btn">Clear</button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <div class="row">
+                <div class="col-lg-12">
+                    <p>Copyright &copy; Xingwen Niu</p>
+                </div>
+            </div>
+            <!-- /.row -->
+        </footer>
+
+    </div>
+    <!-- /.container -->
+
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/js/bootstrap.min.js"></script>
+
+{% block afterscript %}
+    <script type="text/javascript">
+        $('#term').click(function(){
+
+		var $this = $(this);
+		$this.toggleClass('term');
+		if($this.hasClass('term')){
+			$('#term').val('36');
+		} else {
+			$('#term').val('60');
+		}
+	});
+    </script>
+    <script type="application/javascript">
+        var id_num = 1;
+        var error_response = function(data){
+            $('.api-response').text('Error:' + "");
+        }
+
+        var susccess_response = function(data){
+            //$('.api-response').html("API Response: OK<br/>Content: " + JSON.stringify(data));
+            if(data.status != 'failed')
+                var loan_amnt = $('#loan_amnt').val();
+                var int_rate = $('#int_rate').val();
+                var term = $('#term').val();
+                var fund_rate = $('#fund_rate').val();
+                id_num+=1;
+                $("#result").append("<tr><td>" + id_num +"</td><td>" + loan_amnt + "</td><td>" + int_rate + "</td><td>" + term + "</td><td>" + fund_rate + "</td><td>" + data.data + "</td></tr>")
+        }
+
+
+        $().ready(function(e){
+
+            //$('form.ajax-post button[type=submit]').click(function(e){
+            $('form.ajax-post').submit(function(e){
+                e.preventDefault();
+
+                var form = $(this);
+                $.ajax({
+                    url: form.attr('action'),
+                    method: form.attr('method'),
+                    data: form.serialize(),
+                    dataType: "json"
+                })
+                .done(function(data){susccess_response(data);})
+                .fail(function(data){error_response(data);});
+
+                // void the form submit again
+                return false;
+            });
+
+            $('#clear').click(function(){
+                $('#result').html('');
+                id_num = 0;
+            })
+        });
+    </script>
+    <script>
+
+    </script>
+{% endblock %}
+
+</body>
+
+</html>
